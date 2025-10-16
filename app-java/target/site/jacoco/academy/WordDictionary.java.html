@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>WordDictionary.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">hangman</a> &gt; <a href="index.source.html" class="el_package">academy</a> &gt; <span class="el_source">WordDictionary.java</span></div><h1>WordDictionary.java</h1><pre class="source lang-java linenums">package academy;
+import java.util.*;
+
+<span class="fc" id="L4">public enum WordDictionary {</span>
+<span class="fc" id="L5">    ANIMALS(</span>
+<span class="fc" id="L6">        List.of(&quot;кот&quot;, &quot;собака&quot;, &quot;тигр&quot;, &quot;слон&quot;, &quot;жираф&quot;, &quot;обезьяна&quot;, &quot;крокодил&quot;),</span>
+<span class="fc" id="L7">        List.of(&quot;бегемот&quot;, &quot;пантера&quot;, &quot;кенгуру&quot;, &quot;дельфин&quot;, &quot;хамелеон&quot;),</span>
+<span class="fc" id="L8">        List.of(&quot;акула&quot;, &quot;страус&quot;, &quot;фламинго&quot;, &quot;скорпион&quot;, &quot;тарантул&quot;)</span>
+    ),
+
+<span class="fc" id="L11">    CITIES(</span>
+<span class="fc" id="L12">        List.of(&quot;москва&quot;, &quot;самара&quot;, &quot;сочи&quot;, &quot;казань&quot;, &quot;омск&quot;),</span>
+<span class="fc" id="L13">        List.of(&quot;владивосток&quot;, &quot;екатеринбург&quot;, &quot;калининград&quot;, &quot;новосибирск&quot;),</span>
+<span class="fc" id="L14">        List.of(&quot;благовещенск&quot;, &quot;уссурийск&quot;, &quot;абакан&quot;)</span>
+    ),
+
+<span class="fc" id="L17">    IT(</span>
+<span class="fc" id="L18">        List.of(&quot;код&quot;, &quot;баг&quot;, &quot;фича&quot;, &quot;бит&quot;, &quot;байт&quot;),</span>
+<span class="fc" id="L19">        List.of(&quot;компиляция&quot;,&quot;алгоритм&quot;, &quot;фреймворк&quot;, &quot;интерфейс&quot;),</span>
+<span class="fc" id="L20">        List.of(&quot;рефакторинг&quot;, &quot;инкапсуляция&quot;, &quot;полиморфизм&quot;)</span>
+    ),
+
+<span class="fc" id="L23">    FOOD(</span>
+<span class="fc" id="L24">        List.of(&quot;суп&quot;, &quot;хлеб&quot;, &quot;сыр&quot;, &quot;мясо&quot;, &quot;чай&quot;),</span>
+<span class="fc" id="L25">        List.of(&quot;борщ&quot;, &quot;пельмени&quot;, &quot;шашлык&quot;, &quot;мороженое&quot;),</span>
+<span class="fc" id="L26">        List.of(&quot;оливье&quot;, &quot;винегрет&quot;, &quot;салат&quot;)</span>
+    );
+
+    private final List&lt;String&gt; easyWords;
+    private final List&lt;String&gt; mediumWords;
+    private final List&lt;String&gt; hardWords;
+<span class="fc" id="L32">    private final Random random = new Random();</span>
+
+<span class="fc" id="L34">    WordDictionary(List&lt;String&gt; easyWords, List&lt;String&gt; mediumWords, List&lt;String&gt; hardWords) {</span>
+<span class="fc" id="L35">        this.easyWords = easyWords;</span>
+<span class="fc" id="L36">        this.mediumWords = mediumWords;</span>
+<span class="fc" id="L37">        this.hardWords = hardWords;</span>
+<span class="fc" id="L38">    }</span>
+
+    /**
+     * @param difficulty Game difficulty
+     * @return (String) Words for this difficulty
+     */
+    public String getRandomWord(Difficulty difficulty) {
+<span class="fc bfc" id="L45" title="All 3 branches covered.">        List&lt;String&gt; words = switch (difficulty) {</span>
+<span class="fc" id="L46">            case EASY -&gt; easyWords;</span>
+<span class="fc" id="L47">            case MEDIUM -&gt; mediumWords;</span>
+<span class="fc" id="L48">            case HARD -&gt; hardWords;</span>
+        };
+<span class="fc" id="L50">        return words.get(random.nextInt(words.size()));</span>
+    }
+
+    /**
+     * @return (WordDictionary) Get random category for guessing
+     */
+    public static WordDictionary getRandomCategory() {
+<span class="fc" id="L57">        WordDictionary[] categories = values();</span>
+<span class="fc" id="L58">        return categories[new Random().nextInt(categories.length)];</span>
+    }
+
+    /**
+     * @param number Number for each category for easier setting.
+     *               0 - RANDOM CATEGORY;
+     *               1 - ANIMALS;
+     *               2 - CITIES;
+     *               3 - IT;
+     *               4 - FOOD;
+     * @return (WordDictionary) Returns object with all words for chosen category
+     */
+    public static WordDictionary getCategoryByNumber(int number) {
+<span class="pc bpc" id="L71" title="4 of 5 branches missed.">        switch (number) {</span>
+<span class="fc" id="L72">            case 1: return WordDictionary.ANIMALS;</span>
+<span class="nc" id="L73">            case 2: return WordDictionary.CITIES;</span>
+<span class="nc" id="L74">            case 3: return WordDictionary.IT;</span>
+<span class="nc" id="L75">            case 4: return WordDictionary.FOOD;</span>
+<span class="nc" id="L76">            default: return WordDictionary.getRandomCategory();</span>
+        }
+    }
+
+    /**
+     * @param difficulty Game difficulty
+     * @return (List&lt;String&gt;) Returns words for chosen difficulty
+     */
+    public List&lt;String&gt; getWords(Difficulty difficulty) {
+<span class="pc bpc" id="L85" title="2 of 3 branches missed.">        return switch (difficulty) {</span>
+<span class="fc" id="L86">            case EASY -&gt; easyWords;</span>
+<span class="nc" id="L87">            case MEDIUM -&gt; mediumWords;</span>
+<span class="nc" id="L88">            case HARD -&gt; hardWords;</span>
+        };
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

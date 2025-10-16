@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Application.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">hangman</a> &gt; <a href="index.source.html" class="el_package">academy</a> &gt; <span class="el_source">Application.java</span></div><h1>Application.java</h1><pre class="source lang-java linenums">package academy;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import java.io.Console;
+import java.io.File;
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.charset.Charset;
+import java.util.Map;
+import java.util.Scanner;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import picocli.CommandLine;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
+import picocli.CommandLine.Parameters;
+import javax.xml.transform.Source;
+import static java.util.Objects.nonNull;
+
+@Command(name = &quot;Application Example&quot;, version = &quot;Example 1.0&quot;, mixinStandardHelpOptions = true)
+<span class="nc" id="L25">public class Application implements Runnable {</span>
+<span class="nc" id="L26">    private static final Logger LOGGER = LoggerFactory.getLogger(Application.class);</span>
+<span class="nc" id="L27">    private static final ObjectReader YAML_READER =</span>
+<span class="nc" id="L28">        new ObjectMapper(new YAMLFactory()).findAndRegisterModules().reader();</span>
+<span class="nc bnc" id="L29" title="All 4 branches missed.">    private static final Predicate&lt;String[]&gt; IS_TESTING_MODE = words -&gt; nonNull(words) &amp;&amp; words.length == 2;</span>
+
+    @Option(
+        names = {&quot;-s&quot;, &quot;--font-size&quot;},
+        description = &quot;Font size&quot;)
+    int fontSize;
+
+    @Parameters(
+        paramLabel = &quot;&lt;word&gt;&quot;,
+        description = &quot;Words pair for testing mode&quot;)
+    private String[] words;
+
+    @Option(
+        names = {&quot;-c&quot;, &quot;--config&quot;},
+        description = &quot;Path to YAML config file&quot;)
+    private File configPath;
+
+    public static void main(String[] args) {
+<span class="nc" id="L47">        int exitCode = new CommandLine(new Application()).execute(args);</span>
+<span class="nc" id="L48">        System.exit(exitCode);</span>
+<span class="nc" id="L49">    }</span>
+
+    @Override
+    public void run() {
+<span class="nc" id="L53">        AppConfig config = loadConfig();</span>
+<span class="nc" id="L54">        LOGGER.atInfo().addKeyValue(&quot;config&quot;, config).log(&quot;Config content&quot;);</span>
+
+        // ... logic
+<span class="nc bnc" id="L57" title="All 2 branches missed.">        if (IS_TESTING_MODE.test(config.words())) {</span>
+<span class="nc" id="L58">            LOGGER.atInfo().log(&quot;Non-interactive testing mode enabled&quot;);</span>
+<span class="nc" id="L59">            var word = config.words()[0];</span>
+<span class="nc" id="L60">            var userInput = config.words()[1];</span>
+            try {
+<span class="nc" id="L62">                String result = new TestMode(word, userInput).getResult();</span>
+<span class="nc" id="L63">                System.out.println(result);</span>
+<span class="nc" id="L64">            } catch (Exception e) {</span>
+<span class="nc" id="L65">                throw new RuntimeException(e);</span>
+<span class="nc" id="L66">            }</span>
+<span class="nc" id="L67">        } else {</span>
+<span class="nc" id="L68">            LOGGER.atInfo().log(&quot;Interactive mode enabled&quot;);</span>
+<span class="nc" id="L69">            Console con = System.console();</span>
+<span class="nc" id="L70">            Scanner in = new Scanner(con.reader());</span>
+
+<span class="nc" id="L72">            System.out.println(&quot;Выберите категорию из списка:\n&quot; +</span>
+                &quot; 0 - Случайная категория\n 1 - Животные\n 2 - Города\n 3 - Слова из АйТи\n 4 - Еда\n&quot;);
+<span class="nc" id="L74">            int categoryChoice = in.nextInt();</span>
+
+<span class="nc" id="L76">            System.out.println(&quot;\nВыберите сложность из списка:\n&quot; +</span>
+                &quot; 0 - Случайная сложность\n 1 - Лёгкая\n 2 - Средняя\n 3 - Сложная\n&quot;);
+<span class="nc" id="L78">            int difficultyChoice = in.nextInt();</span>
+
+<span class="nc" id="L80">            GameSettings settings = new GameSettings(</span>
+<span class="nc" id="L81">                Difficulty.getDifficultyByNumber(difficultyChoice),</span>
+<span class="nc" id="L82">                WordDictionary.getCategoryByNumber(categoryChoice)</span>
+            );
+<span class="nc" id="L84">            String[] hangmanStates = settings.getHangmanStates();</span>
+<span class="nc" id="L85">            GameSession game = new GameSession(settings.getSecretWord(), hangmanStates);</span>
+
+<span class="nc" id="L87">            System.out.println(&quot;\nКоличество попыток (количество допустимых ошибок): &quot; + (hangmanStates.length - 1));</span>
+<span class="nc" id="L88">            System.out.println(game.getWord());</span>
+
+<span class="nc bnc" id="L90" title="All 2 branches missed.">            while (!game.isGameOver()) {</span>
+<span class="nc" id="L91">                System.out.println(&quot;Введите букву:&quot;);</span>
+<span class="nc" id="L92">                char letter = in.next().charAt(0);</span>
+<span class="nc" id="L93">                game.guessLetter(letter);</span>
+<span class="nc" id="L94">            }</span>
+<span class="nc" id="L95">            System.exit(0);</span>
+        }
+<span class="nc" id="L97">    }</span>
+
+    private AppConfig loadConfig() {
+        // fill with cli options
+<span class="nc bnc" id="L101" title="All 2 branches missed.">        if (configPath == null) return new AppConfig(fontSize, words);</span>
+
+        // use config file if provided
+        try {
+<span class="nc" id="L105">            return YAML_READER.readValue(configPath, AppConfig.class);</span>
+<span class="nc" id="L106">        } catch (IOException e) {</span>
+<span class="nc" id="L107">            throw new UncheckedIOException(e);</span>
+        }
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

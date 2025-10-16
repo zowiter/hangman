@@ -1,0 +1,14 @@
+academy\Hangman.class
+academy\WordDictionary$1.class
+META-INF\native-image\picocli-generated\resource-config.json
+academy\WordDictionary.class
+academy\Application.class
+academy\GameSettings.class
+academy\WrongLengthException.class
+academy\Hangman$1.class
+META-INF\native-image\picocli-generated\proxy-config.json
+academy\TestMode.class
+academy\Difficulty.class
+META-INF\native-image\picocli-generated\reflect-config.json
+academy\AppConfig.class
+academy\GameSession.class

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TestMode.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">hangman</a> &gt; <a href="index.source.html" class="el_package">academy</a> &gt; <span class="el_source">TestMode.java</span></div><h1>TestMode.java</h1><pre class="source lang-java linenums">package academy;
+
+public class TestMode {
+    private String secretWord;
+    private String guessedWord;
+
+<span class="fc" id="L7">    public TestMode(String secretWord, String guessedWord) {</span>
+<span class="fc" id="L8">        this.secretWord = secretWord.toLowerCase();</span>
+<span class="fc" id="L9">        this.guessedWord = guessedWord.toLowerCase();</span>
+<span class="fc" id="L10">    }</span>
+
+    /**
+     * @return (boolean) Result of checking whether the word is guessed
+     */
+    public boolean checkGuessedWord() {
+<span class="fc" id="L16">        return guessedWord.equals(secretWord);</span>
+    }
+
+    /**
+     * @return (String) Returns the result of guessing in the format &quot;word's_guessed_letters;result&quot;
+     * Letters: * - if the letter is not guessed otherwise the guessed letter
+     * Result: NEG - the word is not guessed, POS - the word is guessed
+     * @throws Exception Throws an exception if lengths of secret and guessed word are not the same
+     */
+    public String getResult() throws Exception {
+<span class="fc bfc" id="L26" title="All 2 branches covered.">        if (secretWord.length() != guessedWord.length()) {</span>
+<span class="fc" id="L27">            System.out.println(&quot;Длины слов не совпадают!&quot;);</span>
+<span class="fc" id="L28">            throw new WrongLengthException(&quot;Lengths do not match&quot;);</span>
+        }
+
+<span class="fc bfc" id="L31" title="All 2 branches covered.">        if (checkGuessedWord()) {</span>
+<span class="fc" id="L32">            return guessedWord + &quot;;POS&quot;;</span>
+        } else {
+<span class="fc" id="L34">            StringBuilder result = new StringBuilder();</span>
+
+<span class="fc bfc" id="L36" title="All 2 branches covered.">            for (int i = 0; i &lt; secretWord.length(); i++) {</span>
+<span class="fc" id="L37">                char secretChar = secretWord.charAt(i);</span>
+                // Если буква есть в угаданном слове - показываем ее, иначе *
+<span class="fc bfc" id="L39" title="All 2 branches covered.">                if (guessedWord.indexOf(secretChar) != -1) {</span>
+<span class="fc" id="L40">                    result.append(secretChar);</span>
+                } else {
+<span class="fc" id="L42">                    result.append('*');</span>
+                }
+            }
+
+<span class="fc" id="L46">            return result.toString() + &quot;;NEG&quot;;</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GameSession.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">hangman</a> &gt; <a href="index.source.html" class="el_package">academy</a> &gt; <span class="el_source">GameSession.java</span></div><h1>GameSession.java</h1><pre class="source lang-java linenums">package academy;
+
+public class GameSession {
+    private final String secretWord;
+<span class="fc" id="L5">    private static Integer mistakesNumber = 0;</span>
+<span class="fc" id="L6">    private boolean isGameOver = false;</span>
+    private static String word; // Строка из * и _, где * - какая буква угадана, а _ - какая нет
+<span class="fc" id="L8">    private static Integer maxMistakes = 0;</span>
+    private static String[] HANGMAN_STAGES;
+    private static Integer remaining;
+
+<span class="fc" id="L12">    public GameSession(String secretWord, String[] HANGMAN_STAGES) {</span>
+<span class="fc" id="L13">        this.secretWord = secretWord;</span>
+<span class="fc" id="L14">        this.HANGMAN_STAGES = HANGMAN_STAGES;</span>
+<span class="fc" id="L15">        word = String.valueOf('_').repeat(secretWord.length());</span>
+<span class="fc" id="L16">        maxMistakes = HANGMAN_STAGES.length - 1;</span>
+<span class="fc" id="L17">        remaining = 0;</span>
+<span class="fc" id="L18">    }</span>
+
+    /**
+     * @param letter Input of user's letter
+     */
+    public void guessLetter(char letter) {
+<span class="fc" id="L24">        remaining = maxMistakes - mistakesNumber;</span>
+<span class="fc bfc" id="L25" title="All 2 branches covered.">        if (!secretWord.contains(String.valueOf(letter))) {</span>
+<span class="fc" id="L26">            System.out.println(&quot;Буква не угадана!&quot;);</span>
+<span class="fc bfc" id="L27" title="All 2 branches covered.">            if (mistakesNumber == HANGMAN_STAGES.length - 2) { //Если ошибка - последняя</span>
+<span class="fc" id="L28">                mistakesNumber++;</span>
+<span class="fc" id="L29">                remaining = maxMistakes - mistakesNumber;</span>
+<span class="fc" id="L30">                isGameOver = true;</span>
+<span class="fc" id="L31">                System.out.println(GameSession.getState());</span>
+<span class="fc" id="L32">                System.out.println(&quot;&quot;&quot;</span>
+                 ===============
+                    Проигрыш!
+                 ===============
+                    &quot;&quot;&quot;);
+<span class="fc" id="L37">                isGameOver = true;</span>
+            }
+<span class="fc bfc" id="L39" title="All 2 branches covered.">            if (!isGameOver) {</span>
+<span class="fc" id="L40">                mistakesNumber++;</span>
+<span class="fc" id="L41">                remaining = maxMistakes - mistakesNumber;</span>
+<span class="fc" id="L42">                System.out.println(&quot;Количество оставшихся попыток: &quot; + remaining.toString());</span>
+<span class="fc" id="L43">                System.out.println(word + &quot;\n&quot;);</span>
+<span class="fc" id="L44">                System.out.println(GameSession.getState());</span>
+            }
+<span class="pc bpc" id="L46" title="2 of 4 branches missed.">        } else if (secretWord.contains(String.valueOf(letter)) &amp;&amp; !isGameOver) {</span>
+<span class="fc" id="L47">            System.out.println(&quot;Буква угадана!&quot;);</span>
+<span class="fc" id="L48">            changeWord(letter);</span>
+<span class="fc" id="L49">            System.out.println(word + &quot;\n&quot;);</span>
+<span class="fc bfc" id="L50" title="All 2 branches covered.">            if (!word.contains(String.valueOf('_'))) {</span>
+<span class="fc" id="L51">                System.out.println(&quot;&quot;&quot;</span>
+                 ==============
+                    Выигрыш!
+                 ==============
+                    &quot;&quot;&quot;);
+<span class="fc" id="L56">                isGameOver = true;</span>
+            }
+        }
+<span class="fc" id="L59">    }</span>
+
+    /**
+     * @return (String) Hangman states (stages) for this game session
+     */
+    private static String getState() {
+<span class="fc" id="L65">        return HANGMAN_STAGES[mistakesNumber];</span>
+    }
+
+    /**
+     * @param letter Input of user's letter for generating string with guessed and not guessed letters
+     */
+    public void changeWord(char letter) {
+<span class="fc" id="L72">        StringBuilder newWord = new StringBuilder(word);</span>
+
+<span class="fc bfc" id="L74" title="All 2 branches covered.">        for (int i = 0; i &lt; secretWord.length(); i++) {</span>
+<span class="fc bfc" id="L75" title="All 2 branches covered.">            if (secretWord.charAt(i) == letter) {</span>
+<span class="fc" id="L76">                newWord.setCharAt(i, letter);</span>
+            }
+        }
+<span class="fc" id="L79">        word = newWord.toString();</span>
+<span class="fc" id="L80">    }</span>
+
+    /**
+     * @return (boolean) Returns whether the game is finished
+     */
+    public boolean isGameOver() {
+<span class="fc" id="L86">        return isGameOver;</span>
+    }
+
+    public String getWord() { //For tests
+<span class="fc" id="L90">        return word;</span>
+    }
+
+    public String[] getHangmanStages() { //For tests
+<span class="fc" id="L94">        return HANGMAN_STAGES;</span>
+    }
+
+    public Integer getMistakesNumber() { //For tests
+<span class="fc" id="L98">        return mistakesNumber;</span>
+    }
+
+    public static Integer getRemaining() {
+<span class="fc" id="L102">        return remaining;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>
